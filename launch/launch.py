@@ -1,27 +1,55 @@
-from ros2_package_assessment.actions import Package, LoadPackage
+
+from launch_ci.actions import Package, System
 from launch import LaunchDescription
-from launch.actions import RegisterEventHandler
+from launch.actions import RegisterEventHandler, TimerAction
 from launch.event_handlers import OnExecutionComplete
+from launch_ci.actions.build_system import BuildSystem
+from launch_ci.actions.clean_package import CleanPackage
+from launch_ci.actions.clone_system import CloneSystem
+from launch_ci.actions.install_system_deps import InstallSystemDeps
 
 
 def generate_launch_description():
     ld = LaunchDescription()
-    pkg = Package(
-        name="rclcpp_cascade_lifecycle",
-        type="distro",
-        version="galactic",
-        local_path="/home/christoph/ws_ros2/temp/",
-        )
-    lp = LoadPackage(package_name="rclcpp_cascade_lifecycle")
-
-    event_handler = OnExecutionComplete(
-        target_action=pkg,
-        on_completion=lp
+    sys = System(
+        name="TestSystem",
+        workspace="/home/christoph/ws_ros2/temp/",
+        packages=[
+            Package(
+                name="rclcpp_cascade_lifecycle",
+                type="distro",
+                version="galactic",
+                system="TestSystem"
+            ),
+            Package(
+                name="angles",
+                type="distro",
+                version="galactic",
+                system="TestSystem"
+            )
+        ]
     )
 
-    reg_vent = RegisterEventHandler(event_handler=event_handler)
+    ls = CloneSystem(
+        system_name="TestSystem",
+    )
 
-    
-    ld.add_action(pkg)
-    ld.add_action(lp)
+    isd = InstallSystemDeps(
+        system_name="TestSystem",
+    )
+
+    cp = CleanPackage(
+        system_name="TestSystem",
+        package_name="angles",
+    )
+
+    bs = BuildSystem(
+        system_name="TestSystem"
+    )
+
+    ld.add_action(sys)
+    ld.add_action(ls)
+    ld.add_action(isd)
+    ld.add_action(cp)
+    ld.add_action(bs)
     return ld

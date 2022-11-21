@@ -1,7 +1,7 @@
-from .register_packages import add_package
-from .register_packages import get_package
+from .register_packages import add_system
+from .register_packages import get_system
 
 __all__ = [
-    "add_package",
-    "get_package",
+    "add_system",
+    "get_system",
 ]

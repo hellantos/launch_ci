@@ -1,5 +1,5 @@
 import os
-from ros2_package_assessment.actions import LoadPackage, Package
+from launch_ci.actions import LoadPackage, Package
 import pytest
 
 
